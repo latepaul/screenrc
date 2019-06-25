@@ -1,0 +1,152 @@
+# Screen RC - Paul Mason
+#
+
+# CAPTION - sets the status line at the bottom of the screen
+#
+# always = always show. Otherwise you can have 'splitonly' which only shows
+#          the status line once you have more than one window
+#
+# caption string is built up of escape sequences beginning with %. Let's 
+# break down the string below:
+#
+# %{.KW} = %{} sets colour settings. Normally this is a background and foreground
+#           colour set by a letter code (see below). However the meaning is 
+#           reversed in reverse video mode (i.e. first letter is now fore-, 2nd 
+#           background). Using a . means 1st always is fore-, so 
+#           %{.KW} means "set colour to bright white (W) on 'bright' black aka 
+#           grey (K)"
+#
+# %S     = session id which could be e.g. ii-4321-dmp or dino_issue
+#          note the command :sessionname can be used to rename the session
+#          session names don't have to be unique (there's a pid too) but
+#          it's a good idea
+#
+# %{.Kw} = "set colour to white (w) on grey (K)" 
+#
+# %-w    = All the window numbers and namees upto but not including the current 
+#           one. 
+# %+w    = All the window numbers and names after the current
+#
+#  so %-wSOMETHING%+w - will show you all the other windows with SOMETHING as 
+#  the format for the current one - which may include colour formatting
+#
+# %{.Yk} = set colour to black on bright yellow (Y)
+#
+# %?     = conditional setting using the string that follows
+# %F     = 'true' for current window
+#
+# so %?%F* = put an * after the current focussed window
+#
+# %n     = window number
+# %t     = window title (defaults to shell name, change with ctrl-A A
+#
+# %{-}   = reverse last colour change - effect of this here is so we can
+#          set a special colour for only the current window because what follows
+#          is %+w i.e. the rest of the windows
+#
+# %=     = pad to horizontal width i.e. anything after this will be right-aligned
+#
+# %H     = hostname
+#
+#
+# So put that all together and you have an overall light grey (w) on dark grey (K)
+# status bar, with the session name in bright white, each window as "# name" with
+# the current window in black on yellow, with the hostname on the right.
+#
+# Notes:
+#       - I originally had the current window indicated by reversing the colours
+#         (%{.wK}) however I started using monitoring (see below) and when 
+#         activity occurs in another window, screen notes this with reverse 
+#         so I used a different colour for current window.
+#       - we're using "%n %t" for the format for the current window, this is to
+#         emulate what %-w %+w give us. If we put something else in there it
+#         would be obvious what the current window is 
+#       - it looks complicated - break it down and it's simpler
+#
+# Colours:
+#         k = black, r = red, g = green, y = yellow, b = blue, m = magenta,
+#         c = cyan, w = white
+#         capitalised versions are 'bright' versions
+#         . = unchanged (used if you want to set fore but not background)
+#
+caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
+
+#
+# example of creating an on/off switch for captions
+#
+#ctrl-A F to 'switch off' captions
+#bind F eval "hardstatus off "
+#ctrl-A F to 'switch on' captions
+#bind f eval "hardstatus alwayslastline  \"%{.Kw}%-w%{.wK}%n %t%{-}%+w %= %H %d%M %C%a\""
+#
+#
+
+# defshell - shell to be used for new window
+defshell -/bin/bash
+
+# defscrollback - scrollback buffer - use ctrl-A ESC to start scrolling (copy mode)
+defscrollback 10000
+
+# window and region management
+#
+# "window" = effectively another session, a new one gets created when you do 
+#             ctrl-a c 
+# "region" = part of the physical screen e.g. if you split the screen verically
+#             but do ctrl-a c three times you have 2 regions (left and right) but
+#             3 windows (0,1,2)
+#
+# by default creating a new split creates a new region but you have to move to it
+# and either select a window or create a new one, so add some key bindings to
+# split and switch/create
+#
+# each region has its own status line, its own current window
+#
+# ctrl-a s will create a spit and a new window in it
+bind s eval "split" "focus down" "screen"
+# ctrl-a v will create a vertical split and a new window
+bind v eval "split -v" "focus right" "screen"
+# ctrl-a S create a split but not a new window, instead select one
+bind S eval "split" "focus down" "windowlist -b -m"
+# ctrl-a V create a vertical split but not a new window, instead select one
+bind V eval "split -v" "focus right" "windowlist -b -m"
+
+# fit current window to current region - useful if you created a new window
+# in a small region then switched to it in a large one
+bind f fit
+# ctrl-a q make current region only one
+bind q only
+# ctrl-a x remove current region 
+bind x remove
+
+# create a new layout - use this so we can re-attach to last layout
+layout new
+# new layout starts with blank screen, so selct window 0
+select 0
+
+# bind ctrl-a <arrow keys> to move regions in the expected way
+bindkey -t "^A^[OC" focus right
+bindkey -t "^A^[OD" focus left
+bindkey -t "^A^[OA" focus up
+bindkey -t "^A^[OB" focus down
+
+# monitor screens for activity
+#
+# note if you have multiple regions, you will only get notified if you have
+# activity in a window that's not visible in one of your regions
+#
+# turn on by default
+defmonitor on
+# message to show if there's activity in non-current window
+activity "%c activity in window %n %t"
+
+# monitor silence (no activity)
+# set timeout to 45s (default is 30s)
+silencewait 45
+
+# time to display message (default is 5s)
+msgwait 1
+
+# use the default key mappings but make them so switch silence on switches
+# monitor off and vice-versa
+bind _ eval "monitor off" "silence on"
+bind M eval "silence off" "monitor on"
