@@ -3,11 +3,13 @@
 
 # CAPTION - sets the status line at the bottom of the screen
 #
+caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
+#
 # always = always show. Otherwise you can have 'splitonly' which only shows
 #          the status line once you have more than one window
 #
 # caption string is built up of escape sequences beginning with %. Let's 
-# break down the string below:
+# break down the string above:
 #
 # %{.KW} = %{} sets colour settings. Normally this is a background and foreground
 #           colour set by a letter code (see below). However the meaning is 
@@ -48,6 +50,7 @@
 #
 # %H     = hostname
 #
+# %c     = time, 24hr clock
 #
 # So put that all together and you have an overall light grey (w) on dark grey (K)
 # status bar, with the session name in bright white, each window as "# name" with
@@ -69,7 +72,6 @@
 #         capitalised versions are 'bright' versions
 #         . = unchanged (used if you want to set fore but not background)
 #
-caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
 
 #
 # example of creating an on/off switch for captions
