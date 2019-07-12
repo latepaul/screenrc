@@ -83,6 +83,20 @@ caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
 #
 #
 
+# enable scrollback
+termcapinfo xterm* ti@:te@
+
+# bell settings
+# message if bell occurs in non-visible window
+bell "bell in %n %t"
+
+# vbell is 'visual bell' - this is for the current window. If on the screen 
+# flashes if the termcap allows ('vb') or can set vbell_msg if not. i
+# If off then audible bell used. I switch off here which would mean audible bell
+# but I disable that in Putty so no bell at all (it's rarely useful and it's
+# annoying because of bash's habit of using it for tab-completes with >1 option)
+vbell off
+
 # defshell - shell to be used for new window
 defshell -/bin/bash
 
