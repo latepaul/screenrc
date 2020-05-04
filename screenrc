@@ -3,7 +3,7 @@
 
 # CAPTION - sets the status line at the bottom of the screen
 #
-caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
+caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H"
 #
 # always = always show. Otherwise you can have 'splitonly' which only shows
 #          the status line once you have more than one window
@@ -50,8 +50,6 @@ caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
 #
 # %H     = hostname
 #
-# %c     = time, 24hr clock
-#
 # So put that all together and you have an overall light grey (w) on dark grey (K)
 # status bar, with the session name in bright white, each window as "# name" with
 # the current window in black on yellow, with the hostname on the right.
@@ -72,6 +70,16 @@ caption always "%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c"
 #         capitalised versions are 'bright' versions
 #         . = unchanged (used if you want to set fore but not background)
 #
+
+# toggle time (%c=24hr clock) as part of the caption line. The downside to having
+# time showing is that when the minute changes screen refreshes the display
+# and if you were scrolling or something this can be annoying. 
+# set up C-a T and C-a t to switch time on/off
+bind T eval "caption always \"%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H %c\""
+
+# C-A t by default is the "time" command which shows the current time, so this
+# overwrites that.  however you can also use C-a C-t for time
+bind t eval "caption always \"%{.KW}%S %{.Kw}%-w%{.Yk}%n %t%{-}%+w %= %H\""
 
 #
 # example of creating an on/off switch for captions
